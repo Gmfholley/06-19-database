@@ -15,13 +15,13 @@ class RatingTest < Minitest::Test
     rating = Rating.new("id" => 1, "rating" => "Purple")
     assert_equal("Purple", rating.rating)
     
-    rating2 = Rating.new(rating: "Purple")
+    rating2 = Rating.new(name: "Purple")
     assert_equal("Purple", rating2.rating)
     
   end
   
   def test_crud
-    r = Rating.new( rating: "test")
+    r = Rating.new(name: "test")
     assert_equal(Fixnum, r.save_record.class)
     r.rating = "Pur"
     assert_equal(Array, r.update_record.class)
@@ -37,12 +37,12 @@ class RatingTest < Minitest::Test
   
   def test_valid
     # Can't be nil
-    r = Rating.new(rating: nil)
+    r = Rating.new(name: nil)
     r.valid?
     assert_equal(1, r.errors.length)
     
     # can't be empty strings
-    r = Rating.new(rating: "")    
+    r = Rating.new(name: "")    
     r.valid?
     assert_equal(1, r.errors.length)
     

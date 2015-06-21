@@ -201,7 +201,14 @@ module DatabaseConnector
   # returns an Array with strings already added
   def self_values
     self_values = []
-    database_field_names.each { |param| self_values << self.send(param)}
+    database_field_names.each do |param| 
+      val = self.send(param)
+      if val.is_a? ForeignKey
+        self_values << val.id
+      else
+        self_values << val
+      end
+    end
     self_values
   end
   

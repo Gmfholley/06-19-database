@@ -6,7 +6,7 @@ class Rating
   
   # rating - String of the movie rating (G, PG, PG-13, R, etc)
   attr_reader :id, :errors
-  attr_accessor :rating
+  attr_accessor :name
   
   
   # initializes a Rating id
@@ -18,7 +18,7 @@ class Rating
   # returns an instance of the object
   def initialize(args={})
     @id = args["id"] || ""
-    @rating = args[:rating] || args["rating"]
+    @name = args[:name] || args["name"]
     @errors = []
   end
   

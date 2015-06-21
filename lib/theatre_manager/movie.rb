@@ -1,14 +1,22 @@
-require_relative 'database_connector.rb'
-
-# CONNECTION=SQLite3::Database.new("movies.db")
+# require 'active_support.rb'
+# require 'active_support/core_ext/object/blank.rb'
+# require_relative 'database_connector.rb'
+# require_relative 'foreign_key.rb'
+# require_relative 'rating.rb'
+# require_relative 'studio.rb'
+# require_relative 'location_time.rb'
+# require_relative 'location.rb'
+# require_relative 'timeslot.rb'
+#
+# CONNECTION=SQLite3::Database.new("/Users/gwendolyn/code/06-19-Database/lib/movies.db")
 # CONNECTION.results_as_hash = true
 # CONNECTION.execute("PRAGMA foreign_keys = ON;")
 
 class Movie
   include DatabaseConnector
   
-  attr_accessor :name, :description, :length, :studio_id, :rating_id
-  attr_reader :id, :errors
+  attr_accessor :name, :description, :length, :studio_id
+  attr_reader :id, :errors, :rating_id
   
   # initializes object
   #
@@ -23,9 +31,21 @@ class Movie
     @id = args["id"] || ""
     @name = args[:name] || args["name"]
     @description = args[:description] || args["description"]
-    @rating_id = args[:rating_id] || args["rating_id"]
-    @studio_id = args[:studio_id] || args["studio_id"]
+
     @length = args[:length] || args["length"]
+    r_id = args[:rating_id] || args["rating_id"]
+    @rating_id = ForeignKey.new({id: r_id, class_name: Rating})
+    s_id = args[:studio_id] || args["studio_id"]
+    @studio_id = ForeignKey.new({id: s_id, class_name: Studio})
+    
+  end
+  
+  def rating_id=(new_id)
+    @rating_id = ForeignKey.new({id: new_id, class_name: Rating})
+  end
+  
+  def studio_id=(new_id)
+    @studio_id = ForeignKey.new({id: new_id, class_name: Studio})
   end
   
   # returns a Boolean if it is ok to delete
@@ -52,16 +72,14 @@ class Movie
   #
   # returns String
   def rating
-    r = Rating.create_from_database(rating_id.to_i)
-    r.rating
+    rating_id.get_object.name
   end
   
   # returns the studio name
   #
   # returns String
   def studio
-    s = Studio.create_from_database(studio_id.to_i)
-    s.name
+    studio_id.get_object.name
   end
   
   # returns Array of all the location-times for this movie
@@ -87,19 +105,26 @@ class Movie
     end
     
     # check the description exists and is not empty
-    if studio_id.to_s.empty?  
-      @errors << {message: "Studio id cannot be empty.", variable: "studio_id"}
-    elsif studio.blank?
-      @errors << {message: "Studio id must be a member of the studios table.", variable: "studio_id"}
-    end      
+    # if studio_id.to_s.empty?
+    #   @errors << {message: "Studio id cannot be empty.", variable: "studio_id"}
+    # elsif studio.blank?
+    #   @errors << {message: "Studio id must be a member of the studios table.", variable: "studio_id"}
+    # end   
     
-    # check the description exists and is not empty
-    if rating_id.to_s.empty?
-      @errors << {message: "Rating id cannot be empty.", variable: "rating_id"}
-    elsif rating.blank?
-      @errors << {message: "Rating id must be a member of the ratings table.", variable: "rating_id"}
+    if !studio_id.valid?
+      @errors += studio_id.errors
     end
     
+    # check the description exists and is not empty
+    # if rating_id.to_s.empty?
+    #   @errors << {message: "Rating id cannot be empty.", variable: "rating_id"}
+    # elsif rating.blank?
+    #   @errors << {message: "Rating id must be a member of the ratings table.", variable: "rating_id"}
+    # end
+    
+    if !rating_id.valid?
+      @errors += rating_id.errors
+    end
     # checks the number of time slots
     if length.to_s.empty?
       @errors << {message: "Length cannot be empty.", variable: "length"}

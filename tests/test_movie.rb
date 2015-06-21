@@ -1,7 +1,8 @@
 require "minitest/autorun"
 require 'active_support.rb'
 require 'active_support/core_ext/object/blank.rb'
-require "./lib/theatre_manager.rb"
+require "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/movie.rb"
+
 # require_relative "movie.rb"
 # require_relative "rating.rb"
 # require_relative "location_time.rb"
