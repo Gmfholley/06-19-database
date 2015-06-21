@@ -1,7 +1,14 @@
 require "minitest/autorun"
 require 'active_support.rb'
 require 'active_support/core_ext/object/blank.rb'
-require "./lib/theatre_manager.rb"
+# require "./lib/theatre_manager.rb"
+require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/location_time.rb"
+require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/timeslot.rb"
+require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/movie.rb"
+require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/location.rb"
+require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/rating.rb"
+require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/studio.rb"
+
 # require_relative "movie.rb"
 # require_relative "location.rb"
 # require_relative "timeslot.rb"
@@ -20,22 +27,22 @@ class LocationTimeTest < Minitest::Test
   def test_initialize
     loctime = LocationTime.new("location_id" => 1, "timeslot_id" => 2, "movie_id" => 3, "num_tickets_sold" => 
     1)  
-    assert_equal(1, loctime.location_id)
-    assert_equal(2, loctime.timeslot_id)
-    assert_equal(3, loctime.movie_id)
+    assert_equal(1, loctime.location_id.id)
+    assert_equal(2, loctime.timeslot_id.id)
+    assert_equal(3, loctime.movie_id.id)
     assert_equal(1, loctime.num_tickets_sold)
 
 
     loctime2 = LocationTime.new(location_id: 1, "timeslot_id": 2, "movie_id": 3, "num_tickets_sold": 1)  
-    assert_equal(1, loctime2.location_id)
-    assert_equal(2, loctime2.timeslot_id)
-    assert_equal(3, loctime2.movie_id)
+    assert_equal(1, loctime2.location_id.id)
+    assert_equal(2, loctime2.timeslot_id.id)
+    assert_equal(3, loctime2.movie_id.id)
     assert_equal(1, loctime2.num_tickets_sold)
     
     loctime2 = LocationTime.create_from_database(1, 3)  
-    assert_equal(1, loctime2.location_id)
-    assert_equal(3, loctime2.timeslot_id)
-    assert_equal(1, loctime2.movie_id)
+    assert_equal(1, loctime2.location_id.id)
+    assert_equal(3, loctime2.timeslot_id.id)
+    assert_equal(1, loctime2.movie_id.id)
     assert_equal(0, loctime2.num_tickets_sold)
     
     # @location_id = args[:location_id] || args["location_id"]
@@ -64,7 +71,7 @@ class LocationTimeTest < Minitest::Test
     assert_equal(Array, l.save_record.class)
     l.num_tickets_sold= 3
     assert_equal(Array, l.update_record.class)
-    assert_equal(Array, LocationTime.delete_record(l.location_id, l.timeslot_id).class)
+    assert_equal(Array, LocationTime.delete_record(l.location_id.id, l.timeslot_id.id).class)
     assert_equal(LocationTime, LocationTime.all.first.class)
   end
   

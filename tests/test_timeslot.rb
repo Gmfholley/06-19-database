@@ -1,5 +1,7 @@
 require "minitest/autorun"
-require "./lib/theatre_manager.rb"
+require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/location_time.rb"
+require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/timeslot.rb"
+#require "./lib/theatre_manager.rb"
 # require_relative "location_time.rb"
 # require_relative "timeslot.rb"
 

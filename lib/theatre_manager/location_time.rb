@@ -1,14 +1,15 @@
 require_relative 'database_connector.rb'
+require_relative 'foreign_key.rb'
 
-# CONNECTION=SQLite3::Database.new("movies.db")
-# CONNECTION.results_as_hash = true
-# CONNECTION.execute("PRAGMA foreign_keys = ON;")
+CONNECTION=SQLite3::Database.new("/Users/gwendolyn/code/06-19-Database/lib/movies.db")
+CONNECTION.results_as_hash = true
+CONNECTION.execute("PRAGMA foreign_keys = ON;")
 
 class LocationTime
   include DatabaseConnector
   
-  attr_accessor :movie_id, :num_tickets_sold
-  attr_reader :location_id, :timeslot_id, :errors
+  attr_accessor :num_tickets_sold
+  attr_reader :location_id, :timeslot_id, :movie_id, :errors
   # initializes object
   #
   # args -      Options Hash
@@ -19,10 +20,17 @@ class LocationTime
   #             num_tickets_sold  - Integer of the number of tickets sold for this time slot - Defaults to 0
   #
   def initialize(args={})
-    @location_id = args[:location_id] || args["location_id"]
-    @timeslot_id = args[:timeslot_id] || args["timeslot_id"]
-    @movie_id = args[:movie_id] || args["movie_id"]
+    l_id = args[:location_id] || args["location_id"]
+    @location_id = ForeignKey.new({id: l_id, class_name: Location})
+    t_id = args[:timeslot_id] || args["timeslot_id"]
+    @timeslot_id = ForeignKey.new({id: t_id, class_name: TimeSlot})
+    m_id = args[:movie_id] || args["movie_id"]
+    @movie_id = ForeignKey.new({id: m_id, class_name: Movie})
     @num_tickets_sold = args[:num_tickets_sold] || args["num_tickets_sold"] || 0
+  end
+  
+  def movie_id=(new_id)
+    @movie_id = ForeignKey.new(id: new_id, class_name: Movie)
   end
   
   # returns the String representation of the time slot
@@ -36,23 +44,29 @@ class LocationTime
   #
   # returns String
   def movie
-    m = Movie.create_from_database(movie_id.to_i)
-    m.name
+    movie_id.get_object.name
+    # m = Movie.create_from_database(movie_id.to_i)
+    # m.name
   end
   
   # returns the time slot in time
   #
   # returns Integer
   def timeslot
-    t = TimeSlot.create_from_database(timeslot_id.to_i)
-    t.time_slot
+    timeslot_id.get_object.time_slot
+    # t = TimeSlot.create_from_database(timeslot_id.to_i)
+    # t.time_slot
   end
   
-  # returns the location name for this time slot
+  # returns the location name for this ti
   #
   # returns String
   def location
     location_object.name
+  end
+  
+  def location_object
+    location_id.get_object
   end
   
   # returns whether tickets are sold out for the location
@@ -75,15 +89,11 @@ class LocationTime
     end
   end
   
-  def location_object
-    l = Location.create_from_database(location_id.to_i)
-  end
-  
   # returns an Array of objects of all movies at this location
   #
   # returns an Array
   def where_this_location
-    LocationTime.where_match("location_id", @location_id, "==")
+    LocationTime.where_match("location_id", @location_id.id, "==")
   end
 
 
@@ -94,24 +104,36 @@ class LocationTime
     @errors = []
     # check thename exists and is not empty
     # check the description exists and is not empty
-    if timeslot_id.to_s.empty?
-      @errors << {message: "TimeSlotslot id cannot be empty.", variable: "timeslot_id"}
-    elsif timeslot.blank?
-      @errors << {message: "TimeSlotslot id must be a member of the times table.", variable: "timeslot_id"}
-    end      
+    # if timeslot_id.to_s.empty?
+    #   @errors << {message: "TimeSlotslot id cannot be empty.", variable: "timeslot_id"}
+    # elsif timeslot.blank?
+    #   @errors << {message: "TimeSlotslot id must be a member of the times table.", variable: "timeslot_id"}
+    # end
+    #
+    # # check the description exists and is not empty
+    # if location_id.to_s.empty?
+    #   @errors << {message: "Location id cannot be empty.", variable: "location_id"}
+    # elsif location.blank?
+    #   @errors << {message: "Location id must be a member of the locations table.", variable: "location_id"}
+    # end
     
     # check the description exists and is not empty
-    if location_id.to_s.empty?
-      @errors << {message: "Location id cannot be empty.", variable: "location_id"}
-    elsif location.blank?
-      @errors << {message: "Location id must be a member of the locations table.", variable: "location_id"}
+    # if movie_id.to_s.empty?
+    #   @errors << {message: "Movie id cannot be empty.", variable: "movie_id"}
+    # elsif movie.blank?
+    #   @errors << {message: "Movie id must be a member of the movies table.", variable: "movie_id"}
+    # end
+    
+    if !timeslot_id.valid?
+      @errors += timeslot_id.errors
     end
     
-    # check the description exists and is not empty
-    if movie_id.to_s.empty?
-      @errors << {message: "Movie id cannot be empty.", variable: "movie_id"}
-    elsif movie.blank?
-      @errors << {message: "Movie id must be a member of the movies table.", variable: "movie_id"}
+    if !location_id.valid?
+      @errors += location_id.errors
+    end
+    
+    if !movie_id.valid?
+      @errors += movie_id.errors
     end
     
     # checks the number of time slots
@@ -135,7 +157,7 @@ class LocationTime
   # overwrites saved_already in this case because the primary key is not created by the database
   # returns Boolean
   def saved_already?
-    ! LocationTime.create_from_database(location_id, timeslot_id).location_id.to_s.empty?
+    ! LocationTime.create_from_database(location_id.id, timeslot_id.id).location_id.to_s.empty?
   end
   
   # creates a new record in the table for this object
@@ -147,7 +169,7 @@ class LocationTime
     if !saved_already?
       if valid?
         CONNECTION.execute("INSERT INTO #{table} (#{string_field_names}, timeslot_id, location_id) VALUES 
-        (#{stringify_self}, #{timeslot_id}, #{location_id});")
+        (#{stringify_self}, #{timeslot_id.id}, #{location_id.id});")
       else
         false
       end
@@ -162,7 +184,7 @@ class LocationTime
   def update_record
     if valid?
       query_string = "UPDATE #{table} SET #{parameters_and_values_sql_string} WHERE location_id =     
-      #{location_id} AND timeslot_id = #{timeslot_id};"
+      #{location_id.id} AND timeslot_id = #{timeslot_id.id};"
       CONNECTION.execute(query_string)
     else
       false
@@ -178,7 +200,7 @@ class LocationTime
     end
     if valid?
       CONNECTION.execute("UPDATE #{table} SET #{change_field} = #{change_value} WHERE location_id = 
-      #{@location_id} AND timeslot_id = #{@timeslot_id};")
+      #{@location_id.id} AND timeslot_id = #{@timeslot_id.id};")
     else
       false
     end
@@ -188,14 +210,14 @@ class LocationTime
   #
   # returns an Array
   def where_this_time
-    LocationTime.where_match("timeslot_id", @timeslot_id, "==")
+    LocationTime.where_match("timeslot_id", @timeslot_id.id, "==")
   end
   
   # returns an Array of objects of all movies at this location
   #
   # returns an Array
   def where_this_movie
-    LocationTime.where_match("movie_id", @movie_id, "==")
+    LocationTime.where_match("movie_id", @movie_id.id, "==")
   end
   
   # overwrites database_connector method because this has a composite id
@@ -241,8 +263,8 @@ class LocationTime
   # returns Array if deleted, false if not successful
   def self.delete_record(location_id, timeslot_id)
     if ok_to_delete?(location_id)
-      CONNECTION.execute("DELETE FROM #{self.to_s.pluralize} WHERE location_id == #{location_id} AND 
-      timeslot_id == #{timeslot_id}")
+      query_string = "DELETE FROM #{self.to_s.pluralize} WHERE location_id == #{location_id} AND timeslot_id == #{timeslot_id}"
+      CONNECTION.execute(query_string)
     else
       false
     end
