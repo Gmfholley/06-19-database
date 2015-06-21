@@ -6,7 +6,6 @@ require 'active_support/inflector.rb'
 # TODO - consider making a class called "PrimaryKey" that would verify that ids are integers and that 
 # =>     would allow omposite keys to be handled by this module too, instead of being treated as an edge 
 # =>     case
-# TODO - consider making a class called "ForeignKey" to handle the database lookups to verify a foreign key
 #
 
 module DatabaseConnector

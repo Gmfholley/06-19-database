@@ -1,13 +1,13 @@
 require "minitest/autorun"
 require 'active_support.rb'
 require 'active_support/core_ext/object/blank.rb'
-# require "./lib/theatre_manager.rb"
-require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/location_time.rb"
-require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/timeslot.rb"
-require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/movie.rb"
-require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/location.rb"
-require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/rating.rb"
-require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/studio.rb"
+require "./lib/theatre_manager.rb"
+# require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/location_time.rb"
+# require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/timeslot.rb"
+# require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/movie.rb"
+# require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/location.rb"
+# require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/rating.rb"
+# require_relative "/Users/gwendolyn/code/06-19-Database/lib/theatre_manager/studio.rb"
 
 # require_relative "movie.rb"
 # require_relative "location.rb"

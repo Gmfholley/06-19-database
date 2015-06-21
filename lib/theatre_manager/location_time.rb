@@ -1,9 +1,9 @@
 require_relative 'database_connector.rb'
-require_relative 'foreign_key.rb'
-
-CONNECTION=SQLite3::Database.new("/Users/gwendolyn/code/06-19-Database/lib/movies.db")
-CONNECTION.results_as_hash = true
-CONNECTION.execute("PRAGMA foreign_keys = ON;")
+# require_relative 'foreign_key.rb'
+#
+# CONNECTION=SQLite3::Database.new("/Users/gwendolyn/code/06-19-Database/lib/movies.db")
+# CONNECTION.results_as_hash = true
+# CONNECTION.execute("PRAGMA foreign_keys = ON;")
 
 class LocationTime
   include DatabaseConnector

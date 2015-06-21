@@ -9,9 +9,11 @@ require_relative 'theatre_manager/timeslot.rb'
 require_relative 'theatre_manager/movie.rb'
 require_relative 'theatre_manager/location_time.rb'
 require_relative 'theatre_manager/menu.rb'
+require_relative 'theatre_manager/method_to_call.rb'
+require_relative 'theatre_manager/foreign_key.rb'
 
-
-# TODO - consider making a CallMethod class to handle the method to call and the parameters to pass
+# TODO - consider making a PrimaryKey class to hold an Array of the primary keys and their field names
+# 
 
 CONNECTION=SQLite3::Database.new("movies.db")
 CONNECTION.results_as_hash = true

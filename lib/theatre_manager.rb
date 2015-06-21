@@ -10,10 +10,11 @@ require_relative 'theatre_manager/movie.rb'
 require_relative 'theatre_manager/location_time.rb'
 require_relative 'theatre_manager/menu.rb'
 require_relative 'theatre_manager/method_to_call.rb'
+require_relative 'theatre_manager/foreign_key.rb'
 
 
 
-CONNECTION=SQLite3::Database.new("movies.db")
+CONNECTION=SQLite3::Database.new("./data/movies.db")
 CONNECTION.results_as_hash = true
 CONNECTION.execute("PRAGMA foreign_keys = ON;")
 
@@ -99,5 +100,47 @@ class TheatreManager
       analyze.add_menu_item({key_user_returns: 8, user_message: "Return to main menu.", method_name: "home"})
       analyze
   end
+  
+  def available
+    create_menu  = Menu.new("Do you want to get all available or not available?")
+    create_menu.add_menu_item({key_user_returns: 1, user_message: "Available", method_name: "available"})
+    create_menu.add_menu_item({key_user_returns: 2, user_message: "Not available", method_name: "not_available"})
+  end
+  
+  
+  def movie_type_lookup_menu
+    create_menu = Menu.new("What do you want to look up?")
+    create_menu.add_menu_item({key_user_returns: 1, user_message: "Studios", method_name: "studio_id", parameters:[ Studio]})
+    create_menu.add_menu_item({key_user_returns: 2, user_message: "Ratings", method_name: "rating_id", parameters: [ Rating]})
+    create_menu
+  end
+  
+  # accepts a Class, creates a menu of all instances of that object from the database, and returns an instance of the object from the database that the user selects
+  # requires the DatabaseConnector module to be used
+  #
+  # class_object - Class object (like Movie or Student)
+  #
+  # returns Menu
+  def user_choice_of_object_in_class(class_object)
+    create_menu = Menu.new("Which #{class_object.name} do you want to look up?")
+    all = class_object.all
+    all.each_with_index do |object, x|
+      create_menu.add_menu_item({key_user_returns: x + 1, user_message: object.to_s, method_name: object})
+    end
+    create_menu
+  end
+  # Creates a menu and returns the field name that the user wants to change
+  # requires the DatabaseConnector module to be used on the object
+  #
+  # returns Menu
+  def user_choice_of_field(object)
+    fields = object.database_field_names
+    create_menu = Menu.new("Which field do you want to update?")
+    fields.each_with_index do |field, x|
+      create_menu.add_menu_item({key_user_returns: x + 1, user_message: field, method_name: field})
+    end
+    create_menu
+  end
+ 
   
 end
