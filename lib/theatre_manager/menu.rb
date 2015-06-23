@@ -3,8 +3,8 @@ require_relative "menu_item.rb"
 class Menu
   # menu_itmes - array of menu_items
   # title - String of the title
-  attr_reader :menu_items, :title
-  
+  attr_reader :menu_items
+  attr_accessor :title
   # title - String of the title
   #
   # returns self

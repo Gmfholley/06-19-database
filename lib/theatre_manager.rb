@@ -14,7 +14,7 @@ require_relative 'theatre_manager/foreign_key.rb'
 
 
 
-CONNECTION=SQLite3::Database.new("./data/movies.db")
+CONNECTION=SQLite3::Database.new("/Users/gwendolyn/code/06-19-Database/lib/movies.db")
 CONNECTION.results_as_hash = true
 CONNECTION.execute("PRAGMA foreign_keys = ON;")
 
@@ -40,10 +40,10 @@ class TheatreManager
   # calls the theatre menu
   def movie
       movie = Menu.new("What would you like to do with movies?")
-      movie.add_menu_item({key_user_returns: 1, user_message: "Create a movie.", method_name: "create"})
-      movie.add_menu_item({key_user_returns: 2, user_message: "Update a movie.", method_name: "update", parameters: [Movie, "movie"]})
-      movie.add_menu_item({key_user_returns: 3, user_message: "Show me movies.", method_name:"show", parameters: [Movie, "movie"]})
-      movie.add_menu_item({key_user_returns: 4, user_message: "Delete a movie.", method_name:"delete", parameters: [Movie, "movie"]})
+      movie.add_menu_item({key_user_returns: 1, user_message: "Create a movie.", method_name: "create/movie/x?"})
+      movie.add_menu_item({key_user_returns: 2, user_message: "Update a movie.", method_name: "update/movie", parameters: [Movie, "movie"]})
+      movie.add_menu_item({key_user_returns: 3, user_message: "Show me movies.", method_name:"show/movie", parameters: [Movie, "movie"]})
+      movie.add_menu_item({key_user_returns: 4, user_message: "Delete a movie.", method_name:"delete/movie", parameters: [Movie, "movie"]})
       movie.add_menu_item({key_user_returns: 5, user_message: "Return to main menu.", method_name: "home"})
       movie
   end
@@ -53,10 +53,10 @@ class TheatreManager
   # runs the theatre menu
   def theatre
       theatre = Menu.new("What would you like to do with theatres?")
-      theatre.add_menu_item({key_user_returns: 1, user_message: "Create a theatre.", method_name: "create"})
-      theatre.add_menu_item({key_user_returns: 2, user_message: "Update a theatre.", method_name: "update", parameters: [Location, "theatre"]})
-      theatre.add_menu_item({key_user_returns: 3, user_message: "Show me theatres.", method_name: "show", parameters: [Location, "theatre"]})
-      theatre.add_menu_item({key_user_returns: 4, user_message: "Delete a theatre.", method_name:"delete", parameters: [Location, "theatre"]})
+      theatre.add_menu_item({key_user_returns: 1, user_message: "Create a theatre.", method_name: "create/theatre/x?"})
+      theatre.add_menu_item({key_user_returns: 2, user_message: "Update a theatre.", method_name: "update/theatre", parameters: [Location, "theatre"]})
+      theatre.add_menu_item({key_user_returns: 3, user_message: "Show me theatres.", method_name: "show/theatre", parameters: [Location, "theatre"]})
+      theatre.add_menu_item({key_user_returns: 4, user_message: "Delete a theatre.", method_name:"delete/theatre", parameters: [Location, "theatre"]})
       theatre.add_menu_item({key_user_returns: 5, user_message: "Return to main menu.", method_name: "home"})
       theatre
   end
@@ -67,13 +67,13 @@ class TheatreManager
   def location_time
       loc_time = Menu.new("What would you like to do with movie time/theatre slots?")
       loc_time.add_menu_item({key_user_returns: 1, user_message: "Create a new theatre/time slot.", 
-        method_name: "create"})
+        method_name: "create/location_time/x?"})
       loc_time.add_menu_item({key_user_returns: 2, user_message: "Update a theatre/time slot.", 
-        method_name: "update", parameters: [LocationTime, "location_time"]})
+        method_name: "update/location_time", parameters: [LocationTime, "location_time"]})
       loc_time.add_menu_item({key_user_returns: 3, user_message: "Show me theatre/time slots.", 
-        method_name: "show", parameters: [LocationTime, "location_time"]})
+        method_name: "show/location_time", parameters: [LocationTime, "location_time"]})
       loc_time.add_menu_item({key_user_returns: 4, user_message: "Delete a theatre/time slot.", 
-        method_name: "delete"})
+        method_name: "delete/location_time"})
       loc_time.add_menu_item({key_user_returns: 5, user_message: "Return to main menu.", method_name: "home"})
       loc_time          
   end
@@ -84,11 +84,11 @@ class TheatreManager
   def analyze
       analyze = Menu.new("What would you like to see?")
       analyze.add_menu_item({key_user_returns: 1, user_message: "Get all time/theatres for a particular 
-        movie.", method_name: "get_time_location_for_movie"})
+        movie.", method_name: "get_time_location/movie"})
       analyze.add_menu_item({key_user_returns: 2, user_message: "Get all times for a particular theatre.", 
-        method_name: "get_time_location_for_location"})
+        method_name: "get_time_location/theatre"})
       analyze.add_menu_item({key_user_returns: 3, user_message: "Get all movies played at this time.", 
-        method_name: "get_all_movies_for_this_time"})
+        method_name: "get_time_location/time"})
       analyze.add_menu_item({key_user_returns: 4, user_message: "Get all time/theatres that are sold out or 
         not sold out.", method_name: "get_sold_time_locations"})
       analyze.add_menu_item({key_user_returns: 5, user_message: "Get all movies from a particular studio or 
@@ -105,13 +105,21 @@ class TheatreManager
     create_menu  = Menu.new("Do you want to get all available or not available?")
     create_menu.add_menu_item({key_user_returns: 1, user_message: "Available", method_name: "available"})
     create_menu.add_menu_item({key_user_returns: 2, user_message: "Not available", method_name: "not_available"})
+    create_menu
   end
   
   
+  def sold_out
+    create_menu  = Menu.new("Do you want to get all those that are sold out or not sold out?")
+    create_menu.add_menu_item({key_user_returns: 1, user_message: "Sold out", method_name: "sold_out"})
+    create_menu.add_menu_item({key_user_returns: 2, user_message: "Not sold out", method_name: "not_sold_out"})
+    create_menu
+  end
+  
   def movie_type_lookup_menu
     create_menu = Menu.new("What do you want to look up?")
-    create_menu.add_menu_item({key_user_returns: 1, user_message: "Studios", method_name: "studio_id", parameters:[ Studio]})
-    create_menu.add_menu_item({key_user_returns: 2, user_message: "Ratings", method_name: "rating_id", parameters: [ Rating]})
+    create_menu.add_menu_item({key_user_returns: 1, user_message: "Studios", method_name: "studio_id", parameters:[Studio]})
+    create_menu.add_menu_item({key_user_returns: 2, user_message: "Ratings", method_name: "rating_id", parameters: [Rating]})
     create_menu
   end
   
@@ -125,7 +133,7 @@ class TheatreManager
     create_menu = Menu.new("Which #{class_object.name} do you want to look up?")
     all = class_object.all
     all.each_with_index do |object, x|
-      create_menu.add_menu_item({key_user_returns: x + 1, user_message: object.to_s, method_name: object})
+      create_menu.add_menu_item({key_user_returns: x + 1, user_message: object.to_s, method_name: "#{object.id}"})
     end
     create_menu
   end
@@ -137,10 +145,14 @@ class TheatreManager
     fields = object.database_field_names
     create_menu = Menu.new("Which field do you want to update?")
     fields.each_with_index do |field, x|
-      create_menu.add_menu_item({key_user_returns: x + 1, user_message: field, method_name: field})
+      create_menu.add_menu_item({key_user_returns: x + 1, user_message: field, method_name: "#{object.class}/#{object.id}/#{field}"})
     end
     create_menu
   end
  
+ 
+  def class_to_slash_names
+    {Location => "theatre", LocationTime => "location_time", Movie => "movie"}
+  end
   
 end

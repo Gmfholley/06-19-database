@@ -17,7 +17,11 @@ class Rating
   #
   # returns an instance of the object
   def initialize(args={})
-    @id = args["id"] || ""
+    if args["id"].blank?
+      @id =  ""
+    else
+      @id = args["id"].to_i
+    end
     @name = args[:name] || args["name"]
     @errors = []
   end

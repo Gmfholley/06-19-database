@@ -93,6 +93,20 @@ module DatabaseConnector
       self.as_objects(CONNECTION.execute("SELECT * FROM #{self.to_s.pluralize};"))
     end
     
+    
+    # returns object if exists or false if not
+    #
+    # returns object or false
+    def exists?(id)
+      rec = CONNECTION.execute("SELECT * FROM #{self.to_s.pluralize} WHERE id = #{id};").first
+      if rec.nil?
+        false
+      else
+        self.new(r)
+      end
+    end
+    
+    
     # retrieves a record matching the id
     #
     # returns this object's Hash
@@ -194,6 +208,55 @@ module DatabaseConnector
     database_field_names.to_s[1...-1]
   end
   
+  # returns an Array of the Foreign Key objects for this object
+  #
+  # returns an Array
+  def foreign_keys
+    vals = []
+    foreign_key_fields.each do |field|
+      vals << self.send(field)
+    end
+    vals
+  end
+  
+  # returns an Array of the values of these foreign_keys
+  #
+  # returns an Array
+  def non_foreign_key_values
+    vals = []
+    non_foreign_key_fields.each do |field|
+      vals << self.send(field)
+    end
+    vals
+  end
+  
+  
+  # returns an Array of foreign key fields (if any)
+  #
+  # returns an Array
+  def foreign_key_fields
+    keys = []
+    database_field_names.each do |param|
+      if self.send(param).is_a? ForeignKey
+        keys << param
+      end
+    end
+    keys
+  end
+  
+  # returns an Array of all non-foreign key fields
+  #
+  # returns an Array
+  def non_foreign_key_fields
+    self.database_field_names - self.foreign_key_fields
+  end
+  
+  # # returns an Array of Arrays, the first being the field name and the second being the type
+  # def non_foreign_key_fields_and_types
+  #   a = []
+  #
+  #
+  # end
   
   # returns an Array of this object's parameters
   #
@@ -251,11 +314,24 @@ module DatabaseConnector
     final_array.join(", ")
   end
   
+  # returns a Boolean if the id does not exist in the table
+  #
+  # returns Boolean
+  def exists?
+    rec = CONNECTION.execute("SELECT * FROM #{table} WHERE id = #{@id};").first
+    if rec.nil?
+      @errors << "That id does not exist in the table."
+      false
+    else
+      true
+    end
+  end
+  
   # checks if this object has been saved to the database yet
   #
   # returns Boolean
   def saved_already?
-    ! @id == ""
+    @id != ""
   end
   
   # meant to be written over in each class with a valid method
@@ -269,6 +345,7 @@ module DatabaseConnector
   #
   # returns Integer or false
   def save_record
+    
     if !saved_already?
       if valid?
         CONNECTION.execute("INSERT INTO #{table} (#{string_field_names}) VALUES (#{stringify_self});")
@@ -285,7 +362,8 @@ module DatabaseConnector
   #
   # returns false if not saved
   def update_record
-    if valid?
+    
+    if valid? && exists?
       query_string = "UPDATE #{table} SET #{parameters_and_values_sql_string} WHERE id = #{@id};"
       CONNECTION.execute(query_string)
     else

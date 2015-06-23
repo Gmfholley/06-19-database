@@ -28,14 +28,18 @@ class Movie
   #             length        - Integer of the length of the movie
   #
   def initialize(args={})
-    @id = args["id"] || ""
+    if args["id"].blank?
+      @id = ""
+    else
+      @id = args["id"].to_i
+    end
     @name = args[:name] || args["name"]
     @description = args[:description] || args["description"]
 
-    @length = args[:length] || args["length"]
-    r_id = args[:rating_id] || args["rating_id"]
+    @length = (args[:length] || args["length"]).to_i
+    r_id = (args[:rating_id] || args["rating_id"]).to_i
     @rating_id = ForeignKey.new({id: r_id, class_name: Rating})
-    s_id = args[:studio_id] || args["studio_id"]
+    s_id = (args[:studio_id] || args["studio_id"]).to_i
     @studio_id = ForeignKey.new({id: s_id, class_name: Studio})
     
   end
@@ -129,7 +133,7 @@ class Movie
     if length.to_s.empty?
       @errors << {message: "Length cannot be empty.", variable: "length"}
     elsif length.is_a? Integer
-      if length < 0
+      if length < 1
         @errors << {message: "Length must be greater than 0.", variable: "length"}
       end
     else

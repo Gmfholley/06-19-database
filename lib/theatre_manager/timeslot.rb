@@ -8,7 +8,11 @@ class TimeSlot
 
   
   def initialize(args={})
-    @id = args["id"] || ""
+    if args["id"].blank?
+      @id = ""
+    else
+      @id = args["id"].to_i
+    end
     @time_slot = args[:time_slot] || args["time_slot"]
   end
 
@@ -17,6 +21,10 @@ class TimeSlot
   # returns Array
   def location_times
     LocationTime.where_match("timeslot_id", id, "==")
+  end
+  
+  def name
+    @time_slot
   end
   
   # returns self as string

@@ -20,13 +20,13 @@ class LocationTime
   #             num_tickets_sold  - Integer of the number of tickets sold for this time slot - Defaults to 0
   #
   def initialize(args={})
-    l_id = args[:location_id] || args["location_id"]
+    l_id = (args[:location_id] || args["location_id"]).to_i
     @location_id = ForeignKey.new({id: l_id, class_name: Location})
-    t_id = args[:timeslot_id] || args["timeslot_id"]
+    t_id = (args[:timeslot_id] || args["timeslot_id"]).to_i
     @timeslot_id = ForeignKey.new({id: t_id, class_name: TimeSlot})
-    m_id = args[:movie_id] || args["movie_id"]
+    m_id = (args[:movie_id] || args["movie_id"]).to_i
     @movie_id = ForeignKey.new({id: m_id, class_name: Movie})
-    @num_tickets_sold = args[:num_tickets_sold] || args["num_tickets_sold"] || 0
+    @num_tickets_sold = (args[:num_tickets_sold] || args["num_tickets_sold"]).to_i
   end
   
   def movie_id=(new_id)
