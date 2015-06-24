@@ -51,9 +51,9 @@ class ForeignKey
   def valid?
     @errors = []
     if id.blank?
-      @errors << {message: "Id cannot be blank.", variable: "id"}
+      @errors << {message: "#{class_name} id cannot be blank.", variable: "id"}
     elsif !possible_values.include?(id)
-      @errors << {message: "Id must be included in the table.", variable: "id"}
+      @errors << {message: "#{class_name} id must be included in the table.", variable: "id"}
     end
     
     if class_name.blank?

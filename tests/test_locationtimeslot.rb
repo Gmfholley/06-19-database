@@ -39,11 +39,11 @@ class LocationTimeTest < Minitest::Test
     assert_equal(3, loctime2.movie_id.id)
     assert_equal(1, loctime2.num_tickets_sold)
     
-    loctime2 = LocationTime.create_from_database(1, 3)  
-    assert_equal(1, loctime2.location_id.id)
-    assert_equal(3, loctime2.timeslot_id.id)
-    assert_equal(1, loctime2.movie_id.id)
-    assert_equal(0, loctime2.num_tickets_sold)
+    # loctime2 = LocationTime.create_from_database(1)
+    # assert_equal(1, loctime2.location_id.id)
+    # assert_equal(1, loctime2.timeslot_id.id)
+    # assert_equal(1, loctime2.movie_id.id)
+    # assert_equal(0, loctime2.num_tickets_sold)
     
     # @location_id = args[:location_id] || args["location_id"]
     # @timeslot_id = args[:timeslot_id] || args["timeslot_id"]
@@ -60,18 +60,18 @@ class LocationTimeTest < Minitest::Test
   end
   
   def test_tickets_sold
-     loctime2 = LocationTime.create_from_database(1, 3)
+     loctime2 = LocationTime.create_from_database(1)
        # "location:\t#{location}\t\ttimeslot:\t#{timeslot}\t\tmovie:\t#{movie}"
-     assert_equal(300, loctime2.tickets_remaining)
+     assert_equal(LocationTime, loctime2.class)
      assert_equal(false, loctime2.sold_out?)
   end
   
   def test_crud
     l = LocationTime.new(location_id: 6, timeslot_id: 2, movie_id: 1, num_tickets_sold: 2)
-    assert_equal(Array, l.save_record.class)
+    assert_equal(Fixnum, l.save_record.class)
     l.num_tickets_sold= 3
-    assert_equal(Array, l.update_record.class)
-    assert_equal(Array, LocationTime.delete_record(l.location_id.id, l.timeslot_id.id).class)
+    assert_equal(Fixnum, l.update_record.class)
+    assert_equal(Array, LocationTime.delete_record(l.id).class)
     assert_equal(LocationTime, LocationTime.all.first.class)
   end
   

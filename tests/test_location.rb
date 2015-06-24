@@ -14,7 +14,7 @@ class LocationTest < Minitest::Test
   def test_initialize
     loc = Location.new("id" => 1, "num_seats" => 300, "num_staff" => 2, "name" => "Purple", "num_time_slots" => 2)
     assert_equal(300, loc.num_seats)
-    assert_equal(2, loc.num_staff)
+    assert_equal(2, loc.num_staff)  
     assert_equal("Purple", loc.name)
     assert_equal(2, loc.num_time_slots)
     
@@ -31,7 +31,7 @@ class LocationTest < Minitest::Test
     l = Location.new( num_seats: 300, num_staff: 2, name: "Purple", num_time_slots: 2)
     assert_equal(Fixnum, l.save_record.class)
     l.name = "Pur"
-    assert_equal(Array, l.update_record.class)
+    assert_equal(Fixnum, l.update_record.class)
     assert_equal(Array, Location.delete_record(l.id).class)
     assert_equal(Location, Location.all.first.class)
   end
@@ -78,7 +78,7 @@ class LocationTest < Minitest::Test
     # nums must be numbers
     l = Location.new( num_seats: "s", num_staff: "s", name: "s", num_time_slots: "s")    
     l.valid?
-    assert_equal(3, l.errors.length)
+    assert_equal(3, l.errors)
     
     # num_staff and num_seats must be greater than 0
     l = Location.new( num_seats: 0, num_staff: 0, name: 0, num_time_slots: 0)    

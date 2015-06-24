@@ -16,16 +16,34 @@ class Location
   #             num_time_slots    - Integer of the number of time slots that this theatre can have a movie play
   #
   def initialize(args={})
-    
+
     if args["id"].blank?
       @id = ""
     else
       @id = args["id"].to_i
     end
     @name = (args[:name] || args["name"])
-    @num_seats = (args[:num_seats] || args["num_seats"]).to_i
-    @num_staff = (args[:num_staff] || args["num_staff"]).to_i
-    @num_time_slots = (args[:num_time_slots] || args["num_time_slots"]).to_i
+    
+    num_seats = (args[:num_seats] || args["num_seats"])
+    if num_seats.blank?
+      @num_seats = num_seats
+    else
+      @num_seats = num_seats.to_i
+    end
+    
+    num_staff = (args[:num_staff] || args["num_staff"])
+    if num_staff.blank?
+      @num_staff = num_staff
+    else
+      @num_staff = num_staff.to_i
+    end
+    
+    num_time_slots = (args[:num_time_slots] || args["num_time_slots"])
+    if num_time_slots.blank?
+      @num_time_slots = num_time_slots
+    else
+      @num_time_slots = num_time_slots.to_i
+    end
     @errors = []
   end
   

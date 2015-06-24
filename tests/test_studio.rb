@@ -24,7 +24,7 @@ class StudioTest < Minitest::Test
     s = Studio.new( name: "test")
     assert_equal(Fixnum, s.save_record.class)
     s.name = "Pur"
-    assert_equal(Array, s.update_record.class)
+    assert_equal(Fixnum, s.update_record.class)
     
     assert_equal(true, Studio.ok_to_delete?(s.id))
     

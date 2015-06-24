@@ -366,6 +366,7 @@ module DatabaseConnector
     if valid? && exists?
       query_string = "UPDATE #{table} SET #{parameters_and_values_sql_string} WHERE id = #{@id};"
       CONNECTION.execute(query_string)
+      @id
     else
       false
     end

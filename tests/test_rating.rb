@@ -12,19 +12,19 @@ class RatingTest < Minitest::Test
   # One of my specs is that the tip_amount method should blah blah blah.
   
   def test_initialize
-    rating = Rating.new("id" => 1, "rating" => "Purple")
-    assert_equal("Purple", rating.rating)
+    rating = Rating.new("id" => 1, "name" => "Purple")
+    assert_equal("Purple", rating.name)
     
     rating2 = Rating.new(name: "Purple")
-    assert_equal("Purple", rating2.rating)
+    assert_equal("Purple", rating2.name)
     
   end
   
   def test_crud
     r = Rating.new(name: "test")
     assert_equal(Fixnum, r.save_record.class)
-    r.rating = "Pur"
-    assert_equal(Array, r.update_record.class)
+    r.name = "Pur"
+    assert_equal(Fixnum, r.update_record.class)
     assert_equal(true, Rating.ok_to_delete?(r.id))
     assert_equal(Array, Rating.delete_record(r.id).class)
     assert_equal(Rating, Rating.all.first.class)

@@ -27,7 +27,7 @@ class TimeSlotTest < Minitest::Test
     t = TimeSlot.new( time_slot: "test")
     assert_equal(Fixnum, t.save_record.class)
     t.time_slot = "pur"
-    assert_equal(Array, t.update_record.class)
+    assert_equal(Fixnum, t.update_record.class)
     
     assert_equal(true, TimeSlot.ok_to_delete?(t.id))
     

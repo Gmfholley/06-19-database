@@ -60,7 +60,7 @@ class MovieTest < Minitest::Test
     "studio_id" => 1, "length" => 1)
     assert_equal(Fixnum, m.save_record.class)
     m.name = "Pur"
-    assert_equal(Array, m.update_record.class)
+    assert_equal(Fixnum, m.update_record.class)
     assert_equal(true, Movie.ok_to_delete?(m.id))
     
     assert_equal(Array, Movie.delete_record(m.id).class)
@@ -76,7 +76,7 @@ class MovieTest < Minitest::Test
     l = LocationTime.new(location_id: 3, timeslot_id: 5, movie_id: m.id)
     l.save_record
     assert_equal(false, Movie.ok_to_delete?(m.id))
-    LocationTime.delete_record(l.location_id, l.timeslot_id)
+    LocationTime.delete_record(l.id)
     assert_equal(true, Movie.ok_to_delete?(m.id))
     Movie.delete_record(m.id)
   end
@@ -116,13 +116,13 @@ class MovieTest < Minitest::Test
     # length must be 0 or greater, and studio & rating must belong to the table
     m = Movie.new(name: 0, description: 0, studio_id: 0, rating_id: 0, length: 0)
     m.valid?
-    assert_equal(2, m.errors.length)
+    assert_equal(3, m.errors.length)
 
 
     # num_time_slots can't be more than the maximum number of time slots allowed
     m = Movie.new(name: 1, description: 1, studio_id: Studio.all.last.id + 1, rating_id: Rating.all.last.id + 1, length: 0)
     m.valid?
-    assert_equal(2, m.errors.length)
+    assert_equal(3, m.errors.length)
     m.studio_id = Studio.all.last.id
     m.rating_id = Rating.all.last.id
     m.valid?

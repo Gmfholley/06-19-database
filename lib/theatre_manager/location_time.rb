@@ -1,6 +1,7 @@
 require_relative 'database_connector.rb'
-# require_relative 'foreign_key.rb'
-#
+require_relative '/Users/gwendolyn/code/06-19-Database/lib/theatre_manager.rb'
+require_relative 'foreign_key.rb'
+
 # CONNECTION=SQLite3::Database.new("/Users/gwendolyn/code/06-19-Database/lib/movies.db")
 # CONNECTION.results_as_hash = true
 # CONNECTION.execute("PRAGMA foreign_keys = ON;")
@@ -9,7 +10,7 @@ class LocationTime
   include DatabaseConnector
   
   attr_accessor :num_tickets_sold
-  attr_reader :location_id, :timeslot_id, :movie_id, :errors
+  attr_reader :location_id, :timeslot_id, :movie_id, :errors, :id
   # initializes object
   #
   # args -      Options Hash
@@ -19,13 +20,21 @@ class LocationTime
   #             movie_id          - Integer of the movie_id in movies table
   #             num_tickets_sold  - Integer of the number of tickets sold for this time slot - Defaults to 0
   #
+  # TODO - make this look prettier
   def initialize(args={})
+    if args["id"].blank?
+      @id = ""
+    else
+      @id = args["id"].to_i
+    end
+    
     l_id = (args[:location_id] || args["location_id"]).to_i
     @location_id = ForeignKey.new({id: l_id, class_name: Location})
     t_id = (args[:timeslot_id] || args["timeslot_id"]).to_i
     @timeslot_id = ForeignKey.new({id: t_id, class_name: TimeSlot})
     m_id = (args[:movie_id] || args["movie_id"]).to_i
     @movie_id = ForeignKey.new({id: m_id, class_name: Movie})
+    
     @num_tickets_sold = (args[:num_tickets_sold] || args["num_tickets_sold"]).to_i
   end
   
@@ -96,9 +105,23 @@ class LocationTime
     LocationTime.where_match("location_id", @location_id.id, "==")
   end
 
+  # returns an Array of objects of all movies at this location
+  #
+  # returns an Array
+  def where_this_time
+    LocationTime.where_match("timeslot_id", @timeslot_id.id, "==")
+  end
+  
+  # returns an Array of objects of all movies at this location
+  #
+  # returns an Array
+  def where_this_movie
+    LocationTime.where_match("movie_id", @movie_id.id, "==")
+  end
 
   # returns Boolean if objects are valid
   #
+  # TODO - make this look prettier
   # returns Boolean
   def valid?
     @errors = []
@@ -124,12 +147,19 @@ class LocationTime
     #   @errors << {message: "Movie id must be a member of the movies table.", variable: "movie_id"}
     # end
     
+    
     if !timeslot_id.valid?
       @errors += timeslot_id.errors
     end
     
     if !location_id.valid?
       @errors += location_id.errors
+    end
+    
+    lt = lookup_this_location_time
+    
+    if !lt.id.blank? && lt.id != @id
+      @errors << {message: "This location and time are already booked in the database in another record.", variable: "location_id, timeslot_id"}
     end
     
     if !movie_id.valid?
@@ -153,84 +183,19 @@ class LocationTime
     @errors.empty?
   end
   
-  
-  # overwrites saved_already in this case because the primary key is not created by the database
+  # returns a boolean to indicate if this object's timeslot & location are unique
+  #
   # returns Boolean
-  def saved_already?
-    ! LocationTime.create_from_database(location_id.id, timeslot_id.id).location_id.to_s.empty?
-  end
-  
-  # creates a new record in the table for this object
-  # overwrites save_record because it has a composite key
-  #
-  #
-  # returns Integer or false
-  def save_record
-    if !saved_already?
-      if valid?
-        CONNECTION.execute("INSERT INTO #{table} (#{string_field_names}, timeslot_id, location_id) VALUES 
-        (#{stringify_self}, #{timeslot_id.id}, #{location_id.id});")
-      else
-        false
-      end
+  # TODO - make this look prettier
+  def lookup_this_location_time
+    rec = CONNECTION.execute("SELECT * FROM #{table} WHERE location_id = #{location_id.id} AND timeslot_id = #{timeslot_id.id};").first
+    if rec.blank?
+      return LocationTime.new
     else
-      update_record
+      return LocationTime.new(rec)
     end
   end
   
-  # updates all values (except ID) in the record
-  #
-  # returns false if not saved
-  def update_record
-    if valid?
-      query_string = "UPDATE #{table} SET #{parameters_and_values_sql_string} WHERE location_id =     
-      #{location_id.id} AND timeslot_id = #{timeslot_id.id};"
-      CONNECTION.execute(query_string)
-    else
-      false
-    end
-  end
-  
-  # overwrites Modules update_record method because this object has a composite key
-  #
-  # returns false if not updated successfully
-  def update_field(change_field, change_value)
-    if change_value.is_a? String
-      change_value = add_quotes_to_string(change_value)
-    end
-    if valid?
-      CONNECTION.execute("UPDATE #{table} SET #{change_field} = #{change_value} WHERE location_id = 
-      #{@location_id.id} AND timeslot_id = #{@timeslot_id.id};")
-    else
-      false
-    end
-  end
-  
-  # returns an Array of objects of all movies at this location
-  #
-  # returns an Array
-  def where_this_time
-    LocationTime.where_match("timeslot_id", @timeslot_id.id, "==")
-  end
-  
-  # returns an Array of objects of all movies at this location
-  #
-  # returns an Array
-  def where_this_movie
-    LocationTime.where_match("movie_id", @movie_id.id, "==")
-  end
-  
-  # overwrites database_connector method because this has a composite id
-  # returns an Array of field names for this object
-  #
-  # returns an Array
-  def database_field_names
-    attributes = instance_variables.collect{|a| a.to_s.gsub(/@/,'')}
-    attributes.delete("location_id")
-    attributes.delete("timeslot_id")
-    attributes.delete("errors")
-    attributes
-  end
   # returns all Locations with tickets greater than the number of tickets
   #
   # num_tickets    - Integer of the number of tickets sold
@@ -253,37 +218,6 @@ class LocationTime
      locations location ON location.id = locationtime.location_id WHERE location.num_seats > 
      locationtime.num_tickets_sold;"))
    end
-  end
-  
-  # overwrites DatabaseConnector Module method because this Class has a composite key
-  #
-  # location_id     - Integer of the location_id part of the composite key
-  # timeslot_id     - Integer of the timeslot_id part of the composite key
-  #
-  # returns Array if deleted, false if not successful
-  def self.delete_record(location_id, timeslot_id)
-    if ok_to_delete?(location_id)
-      query_string = "DELETE FROM #{self.to_s.pluralize} WHERE location_id == #{location_id} AND timeslot_id == #{timeslot_id}"
-      CONNECTION.execute(query_string)
-    else
-      false
-    end
-  end
-  
-  # overwrites DatabaseConnector Module method because this Class has a composite key
-  #
-  # location_id     - Integer of the location_id part of the composite key
-  # timeslot_id     - Integer of the timeslot_id part of the composite key
-  #
-  # returns object with this location_id/timeslot_id
-  def self.create_from_database(location_id, timeslot_id)
-    rec = CONNECTION.execute("SELECT * FROM #{self.to_s.pluralize} WHERE location_id = #{location_id} AND 
-    timeslot_id = #{timeslot_id};").first
-    if rec.nil?
-      self.new()
-    else
-      self.new(rec)
-    end
   end
   
 end
