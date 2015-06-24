@@ -27,7 +27,7 @@ class Rating
   end
   
   def to_s
-    "id: #{id}\t\tname: #{rating}"
+    "id: #{id}\t\tname: #{name}"
   end
   
   

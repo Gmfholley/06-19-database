@@ -118,8 +118,8 @@ class TheatreManager
   
   def movie_type_lookup_menu
     create_menu = Menu.new("What do you want to look up?")
-    create_menu.add_menu_item({key_user_returns: 1, user_message: "Studios", method_name: "studio_id", parameters:[Studio]})
-    create_menu.add_menu_item({key_user_returns: 2, user_message: "Ratings", method_name: "rating_id", parameters: [Rating]})
+    create_menu.add_menu_item({key_user_returns: 1, user_message: "Studios", method_name: "studio"})
+    create_menu.add_menu_item({key_user_returns: 2, user_message: "Ratings", method_name: "rating"})
     create_menu
   end
   
@@ -152,7 +152,7 @@ class TheatreManager
  
  
   def class_to_slash_names
-    {Location => "theatre", LocationTime => "location_time", Movie => "movie"}
+    {Location => "theatre", LocationTime => "location_time", Movie => "movie", Rating => "rating", Studio => "studio"}
   end
   
 end
