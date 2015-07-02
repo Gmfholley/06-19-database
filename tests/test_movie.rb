@@ -56,7 +56,7 @@ class MovieTest < Minitest::Test
   
   
   def test_crud
-    m = Movie.new("id" => 1, "name" => "Wendy", "description" => "In a world!", "rating_id" => 1, 
+    m = Movie.new("name" => "Wendy", "description" => "In a world!", "rating_id" => 1, 
     "studio_id" => 1, "length" => 1)
     assert_equal(Fixnum, m.save_record.class)
     m.name = "Pur"
@@ -120,7 +120,7 @@ class MovieTest < Minitest::Test
 
 
     # num_time_slots can't be more than the maximum number of time slots allowed
-    m = Movie.new(name: 1, description: 1, studio_id: Studio.all.last.id + 1, rating_id: Rating.all.last.id + 1, length: 0)
+    m = Movie.new(name: 1, description: 1, studio_id: Studio.all.last.id + 1, rating_id: Rating.all.last.id + 1, length: 1)
     m.valid?
     assert_equal(3, m.errors.length)
     m.studio_id = Studio.all.last.id

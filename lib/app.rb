@@ -165,7 +165,7 @@ class TheatreManager
   def get_time_location_for_location
     chosen_theatre = user_choice_of_object_in_class(Location)
     puts chosen_theatre.location_times
-    run_run_analyze_menu
+    run_analyze_menu
   end
   
   def get_all_movies_for_this_time
@@ -261,7 +261,7 @@ class TheatreManager
         puts "Not deleted.  This object id exists in another table."
       end
     }
-    loc_time_menu
+    run_loc_time_menu
   end
   
   # deletes the object chosen by the user
@@ -313,7 +313,7 @@ class TheatreManager
         end
     }
     end
-    loc_time_menu
+    run_loc_time_menu
   end
   
   # gets information needed to create and save to database a Location object
@@ -336,7 +336,7 @@ class TheatreManager
         end
       end
     }
-    theatre_menu
+    run_theatre_menu
   end
   
   
@@ -366,7 +366,7 @@ class TheatreManager
         end
       end
     }
-    movie_menu
+    run_movie_menu
   end  
   
   
